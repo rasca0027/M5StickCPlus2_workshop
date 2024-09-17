@@ -1,4 +1,3 @@
-import os, sys, io
 import M5
 from M5 import *
 import time
@@ -20,11 +19,14 @@ async def record_task():
             await uasyncio.sleep_ms(100)
         Mic.end()
         volume = sum(rec_data) / len(rec_data) * GAIN_FACTOR
-        
-        Widgets.fillScreen(int((volume - 350) * 2.55) << 16)
+        if volumn > 380:
+            Widgets.fillScreen(0xff0000)
+        else:
+            Widgets.fillScreen(0x000000)
+        # Widgets.fillScreen(int((volume - 350) * 2.55) << 16)
         label0.setText(str(volume))
         time.sleep_ms(1000)
-        
+
 async def main():
     uasyncio.create_task(record_task())
     await uasyncio.sleep_ms(500)
@@ -56,3 +58,4 @@ if __name__ == "__main__":
             print_error_msg(e)
         except ImportError:
             print("please update to latest firmware")
+
