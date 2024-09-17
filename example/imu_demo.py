@@ -3,6 +3,7 @@ import os, sys, io
 import M5
 from M5 import *
 import time
+import math
 
 
 # Constants for unit conversion
@@ -18,6 +19,9 @@ preInterval = 0
 angleX = 0
 angleZ = 0
 angleY = 0
+angleGyroX = 0
+angleGyroY = 0
+angleGyroZ = 0
 
 def setup():
     global preInterval
@@ -28,19 +32,16 @@ def setup():
 def loop():
     M5.update()
     x, y, z = get_attitude()
-    print(f"x: {x}, y: {y}, z: {x}")
-    # Widgets.fillScreen((x << 16) + (y << 8) + z)
-    # print(hex((x << 16) + (y << 8) + z))
-    
+    print(f"x: {x}, y: {y}, z: {x}")  # debug
+    r = int((abs(x) % 360) * 255 / 360)
+    g = int((abs(y) % 360) * 255 / 360)
+    b = int((abs(z) % 360) * 255 / 360)
+    Widgets.fillScreen((r << 16) + (g << 8) + b)
 
 def get_attitude() -> tuple:
-    global preInterval, angleX, angleY, angleZ
+    global preInterval, angleX, angleY, angleZ, angleGyroX, angleGyroY, angleGyroZ
     # !Attitude angles as yaw, pitch, and roll in degrees.
-    (
-        accX,
-        accY,
-        accZ,
-    ) = Imu.getAccel() # Get processed acceleration data
+    accX, accY, accZ = Imu.getAccel() # Get processed acceleration data
 
     # Compute tilt angles from the accelerometer data
     angleAccX = math.atan2(accY, accZ + abs(accX)) * (SF_DEG_S / SF_RAD_S)  # noqa: N806
